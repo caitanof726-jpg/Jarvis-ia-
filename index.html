@@ -4,7 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#030610">
-<title>J.A.R.V.I.S. v2.0 — Slayer</title>
+<meta name="color-scheme" content="dark">
+<title>J.A.R.V.I.S. v3.3 — Turbo</title>
+<link rel="preconnect" href="https://image.pollinations.ai">
+<link rel="preconnect" href="https://text.pollinations.ai">
 <style>
   :root{--bg:#030610;--panel:#0a1120;--line:#13304d;--cy:#2fd8ff;--cy2:#0aa8d6;--gold:#ffb340;--red:#ff4455;--ok:#39e07a;--txt:#d8f3ff;--mut:#5d8aa8}
   *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif}
@@ -12,12 +15,12 @@
   header{text-align:center;padding:14px 10px 4px;position:relative}
   .reactor{width:70px;height:70px;margin:0 auto 6px;border-radius:50%;position:relative;
     background:radial-gradient(circle,#eafcff 0%,#9feaff 18%,#2fd8ff 38%,#07314d 70%,transparent 72%);
-    box-shadow:0 0 30px rgba(47,216,255,.8);animation:breathe 3s ease-in-out infinite}
-  .reactor::before,.reactor::after{content:'';position:absolute;inset:0;border-radius:50%;border:2px dashed rgba(47,216,255,.6)}
+    box-shadow:0 0 30px rgba(47,216,255,.75);animation:pulse 3s ease-in-out infinite;will-change:transform,opacity}
+  .reactor::before,.reactor::after{content:'';position:absolute;inset:0;border-radius:50%;border:2px dashed rgba(47,216,255,.6);will-change:transform}
   .reactor::before{animation:spin 9s linear infinite}
   .reactor::after{inset:8px;border-style:solid;border-color:rgba(255,255,255,.35);animation:spin 5s linear infinite reverse}
   @keyframes spin{to{transform:rotate(360deg)}}
-  @keyframes breathe{0%,100%{box-shadow:0 0 24px rgba(47,216,255,.7)}50%{box-shadow:0 0 55px rgba(47,216,255,1)}}
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.05);opacity:.88}}
   h1{font-size:1.3rem;letter-spacing:6px;color:var(--cy);text-shadow:0 0 18px rgba(47,216,255,.7)}
   .tagline{color:var(--mut);font-size:.72rem;letter-spacing:2px;margin-top:2px}
   #muteBtn{position:absolute;right:14px;top:14px;background:var(--panel);border:1px solid var(--line);color:var(--cy);
@@ -27,8 +30,8 @@
   .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok);display:inline-block;animation:blink 2s infinite;margin-right:4px}
   @keyframes blink{50%{opacity:.4}}
   #chat{flex:1;overflow-y:auto;max-width:760px;width:100%;margin:0 auto;padding:10px 14px 16px;display:flex;flex-direction:column;gap:10px}
-  .msg{max-width:86%;padding:11px 15px;border-radius:14px;font-size:.95rem;line-height:1.5;animation:pop .25s;word-wrap:break-word}
-  @keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
+  .msg{max-width:86%;padding:11px 15px;border-radius:14px;font-size:.95rem;line-height:1.5;animation:pop .2s;word-wrap:break-word}
+  @keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   .me{align-self:flex-end;background:linear-gradient(135deg,#123a5c,#0d2a44);border:1px solid var(--line);border-bottom-right-radius:4px}
   .jv{align-self:flex-start;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--cy);border-bottom-left-radius:4px}
   .jv b.tag{color:var(--cy);font-size:.68rem;letter-spacing:2px;display:block;margin-bottom:4px}
@@ -37,29 +40,36 @@
   .jv.gold{border-left-color:var(--gold)}
   .jv a{color:var(--cy)}
   .bar{height:10px;background:#07233b;border-radius:6px;overflow:hidden;margin:8px 0 3px}
-  .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--cy2),var(--cy));width:0;transition:width .4s}
+  .bar i{display:block;height:100%;width:100%;transform:scaleX(0);transform-origin:left;background:linear-gradient(90deg,var(--cy2),var(--cy));transition:transform .25s ease-out}
+  .bar i.load{animation:imgload 8s ease-out both}
+  @keyframes imgload{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  .obra{display:block;width:100%;max-width:420px;height:auto;border-radius:12px;margin-top:8px;border:1px solid var(--line);background:#07233b;opacity:0;transform:translateY(6px);transition:opacity .2s,transform .2s}
+  .obra.ready{opacity:1;transform:none}
   .stat{font-size:.8rem;color:var(--mut)}
   .typing{display:inline-flex;gap:4px;padding:4px 2px}
-  .typing i{width:7px;height:7px;border-radius:50%;background:var(--cy);animation:tp 1s infinite}
+  .typing i{width:7px;height:7px;border-radius:50%;background:var(--cy);animation:tp 1s infinite;will-change:transform,opacity}
   .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
   @keyframes tp{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-4px)}}
-  @keyframes imgload{from{width:0}to{width:100%}}
-  .inputbar{position:sticky;bottom:0;background:rgba(3,6,16,.94);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:10px 12px 12px}
+  .inputbar{position:sticky;bottom:0;background:rgba(3,6,16,.98);border-top:1px solid var(--line);padding:10px 12px 12px}
   .inner{max-width:760px;margin:0 auto;display:flex;gap:8px}
   #txt{flex:1;padding:13px 16px;border-radius:14px;border:1px solid var(--line);background:var(--panel);color:var(--txt);font-size:1rem;outline:none}
   #txt:focus{border-color:var(--cy);box-shadow:0 0 14px rgba(47,216,255,.25)}
   .ib{width:50px;height:50px;border-radius:14px;border:1px solid var(--line);background:var(--panel);color:var(--cy);font-size:1.25rem;cursor:pointer;flex-shrink:0}
   .ib.send{background:linear-gradient(135deg,var(--cy2),var(--cy));color:#032}
   .ib.rec{background:var(--red);color:#fff;border-color:var(--red);animation:blink 1s infinite}
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+    .obra{opacity:1;transform:none}
+  }
 </style>
 </head>
 <body>
 
 <header>
-  <button id="muteBtn" onclick="toggleVoz()" title="Ativar/desativar voz">🔊</button>
-  <div class="reactor"></div>
+  <button id="muteBtn" type="button" onclick="toggleVoz()" title="Ativar/desativar voz" aria-label="Ativar ou desativar voz">🔊</button>
+  <div class="reactor" aria-hidden="true"></div>
   <h1>J.A.R.V.I.S.</h1>
-  <div class="tagline">v3.2 • CÉREBRO NEURAL • INTERFACE LIMPA</div>
+  <div class="tagline">v3.3 • MODO TURBO • RESPOSTAS LOCAIS</div>
 </header>
 
 <div class="status">
@@ -69,27 +79,31 @@
   <span>💰 <b id="saldoTop">--</b></span>
 </div>
 
-<div id="chat"></div>
+<div id="chat" role="log" aria-live="polite" aria-label="Conversa com J.A.R.V.I.S."></div>
 
 <div class="inputbar">
   <div class="inner">
-    <button class="ib" id="micBtn" onclick="mic()">🎤</button>
-    <input id="txt" placeholder="Fale ou digite, senhor..." onkeydown="if(event.key==='Enter')send()" autocomplete="off">
-    <button class="ib send" onclick="send()">➤</button>
+    <button class="ib" id="micBtn" type="button" onclick="mic()" aria-label="Falar por voz">🎤</button>
+    <input id="txt" placeholder="Fale ou digite, senhor..." onkeydown="if(event.key==='Enter')send()" autocomplete="off" spellcheck="false">
+    <button class="ib send" type="button" onclick="send()" aria-label="Enviar">➤</button>
   </div>
 </div>
 
 <script>
 /* ===== base ===== */
-const _m={};const store={get(k){try{return localStorage.getItem(k)}catch(e){return _m[k]??null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){_m[k]=String(v)}}};
-const chat=document.getElementById('chat');
+const $=id=>document.getElementById(id);
+const _m={};
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return _m[k]??null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){_m[k]=String(v)}}};
+const chat=$('chat');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const safeUrl=u=>{try{const x=new URL(u,location.href);return /^https?:$/.test(x.protocol)?x.href:''}catch(e){return ''}};
 const fmt=v=>'R$ '+Number(v).toFixed(2).replace('.',',');
 let saldo=parseFloat(store.get('jv_saldo'));if(isNaN(saldo))saldo=1000;
-let hist=[];try{hist=JSON.parse(store.get('jv_hist')||'[]')}catch(e){}
+let hist=[];try{hist=JSON.parse(store.get('jv_hist')||'[]');if(!Array.isArray(hist))hist=[]}catch(e){hist=[]}
 let voz=store.get('jv_voz')!=='off';
-function upTop(){document.getElementById('saldoTop').textContent=fmt(saldo)}
-function toggleVoz(){voz=!voz;store.set('jv_voz',voz?'on':'off');document.getElementById('muteBtn').textContent=voz?'🔊':'🔇';if(!voz)try{speechSynthesis.cancel()}catch(e){}}
-document.getElementById('muteBtn').textContent=voz?'🔊':'🔇';
+function upTop(){$('saldoTop').textContent=fmt(saldo)}
+function toggleVoz(){voz=!voz;store.set('jv_voz',voz?'on':'off');$('muteBtn').textContent=voz?'🔊':'🔇';if(!voz)try{speechSynthesis.cancel()}catch(e){}}
+$('muteBtn').textContent=voz?'🔊':'🔇';
 
 let vozPT=null;
 function pickVoice(){try{const vs=speechSynthesis.getVoices();vozPT=vs.find(v=>v.lang==='pt-BR')||vs.find(v=>v.lang&&v.lang.startsWith('pt'))||null}catch(e){}}
@@ -97,36 +111,99 @@ pickVoice();try{speechSynthesis.onvoiceschanged=pickVoice}catch(e){}
 function say(t){
   if(!voz)return;
   try{
-    const limpo=t.replace(/<[^>]+>/g,' ').replace(/[*_#•|]/g,' ').replace(/\s+/g,' ').trim().slice(0,300);
+    const limpo=t.replace(/<[^>]+>/g,' ').replace(/[*_#•|]/g,' ').replace(/\s+/g,' ').trim().slice(0,260);
     if(!limpo)return;
     if(window.Android&&Android.speak){Android.speak(limpo);return}
-    const u=new SpeechSynthesisUtterance(limpo);u.lang='pt-BR';u.rate=1.06;if(vozPT)u.voice=vozPT;
+    const u=new SpeechSynthesisUtterance(limpo);u.lang='pt-BR';u.rate=1.08;if(vozPT)u.voice=vozPT;
     speechSynthesis.cancel();speechSynthesis.speak(u);
   }catch(e){}
 }
-function add(cls,html,tag){const d=document.createElement('div');d.className='msg '+cls;d.innerHTML=(tag?`<b class="tag">${tag}</b>`:'')+html;chat.appendChild(d);chat.scrollTop=chat.scrollHeight;return d}
+function add(cls,html,tag){
+  const d=document.createElement('div');d.className='msg '+cls;
+  d.innerHTML=(tag?`<b class="tag">${esc(tag)}</b>`:'')+html;
+  chat.appendChild(d);chat.scrollTop=chat.scrollHeight;return d;
+}
 function typing(){return add('jv','<span class="typing"><i></i><i></i><i></i></span>')}
-async function jarvis(html,extra='',falar=true,delay=350){
-  const t=typing();await new Promise(r=>setTimeout(r,delay));
+async function jarvis(html,extra='',falar=true,delay=60){
+  const t=typing();
+  if(delay)await new Promise(r=>setTimeout(r,delay));
   t.className='msg jv '+extra;t.innerHTML='<b class="tag">J.A.R.V.I.S.</b>'+html;
   chat.scrollTop=chat.scrollHeight;if(falar)say(html);return t;
+}
+
+/* ===== rede: pega o primeiro que responder, aborta o resto ===== */
+async function firstOk(jobs,ok,ms=6000){
+  const ctrls=jobs.map(()=>new AbortController());
+  const timers=ctrls.map(c=>setTimeout(()=>c.abort(),ms));
+  try{
+    return await Promise.any(jobs.map((job,i)=>job(ctrls[i].signal).then(v=>{
+      if(!ok(v))throw new Error('resposta inválida');
+      return v;
+    })));
+  }finally{timers.forEach(clearTimeout);ctrls.forEach(c=>c.abort())}
 }
 
 /* ===== entrada ===== */
 let busy=false,_raw='';
 async function send(){
-  const inp=document.getElementById('txt');const t=inp.value.trim();if(!t||busy)return;
-  inp.value='';add('me',t);busy=true;_raw=t;
+  const inp=$('txt');const t=inp.value.trim();if(!t||busy)return;
+  inp.value='';add('me',esc(t));busy=true;_raw=t;
   try{await processa(t.toLowerCase().trim())}catch(e){await jarvis('⚠️ Tive um curto-circuito interno, senhor. Tente de novo.','alerta')}
   busy=false;
 }
-
 const num=t=>{const m=t.match(/(\d+(?:[.,]\d+)?)/);return m?parseFloat(m[1].replace(',','.')):null};
+
+/* ===== tabelas locais (criadas uma vez só) ===== */
+const STYLES={
+  anime:['anime style, vibrant colors, studio quality, detailed anime art','🇯🇵 Anime'],
+  manga:['black and white manga style, ink, screentones, dramatic lines','📖 Mangá P&B'],
+  chibi:['chibi style, cute, big head small body, kawaii','🍡 Chibi'],
+  pixel:['pixel art, 16-bit retro game style, detailed sprites','👾 Pixel Art'],
+  cartoon:['cartoon style, bold outlines, flat colors, fun','📺 Cartoon'],
+  realista:['photorealistic, ultra realistic, 8k photography, cinematic lighting','📷 Realista'],
+  cyberpunk:['cyberpunk style, neon lights, futuristic, dark atmosphere','🌃 Cyberpunk'],
+  '3d':['3d render, pixar style, octane render, soft lighting','🧊 3D/Pixar'],
+  aquarela:['watercolor painting, soft brush strokes, artistic','🖌️ Aquarela'],
+  oleo:['oil painting, classical art style, textured brushwork','🎨 Pintura a óleo'],
+  hq:['american comic book style, bold ink, halftone dots, dynamic','💥 HQ/Comic'],
+  sombrio:['dark fantasy style, gothic, dramatic shadows, epic','🌑 Sombrio'],
+  vaporwave:['vaporwave aesthetic, pink and purple neon, retro 80s','🌴 Vaporwave'],
+  lowpoly:['low poly 3d style, geometric, minimalist','🔷 Low Poly'],
+  lapis:['pencil sketch, hand drawn, graphite shading','✏️ Lápis'],
+  graffiti:['graffiti street art style, spray paint, urban, colorful','🧱 Graffiti']
+};
+const STYLE_KEYS=Object.keys(STYLES);
+const ALIAS={'mangá':'manga','3d':'3d','pixar':'3d','óleo':'oleo','oleo':'oleo','comic':'hq','quadrinhos':'hq','dark':'sombrio','gótico':'sombrio','gotico':'sombrio','esboço':'lapis','esboco':'lapis','desenho a lápis':'lapis','low poly':'lowpoly','pixel art':'pixel'};
+const APPS={
+  youtube:['YouTube','https://www.youtube.com'],whatsapp:['WhatsApp','https://web.whatsapp.com'],
+  drive:['Google Drive','https://drive.google.com'],maps:['Google Maps','https://www.google.com/maps'],
+  google:['Google','https://www.google.com'],gmail:['Gmail','https://mail.google.com'],
+  spotify:['Spotify','https://open.spotify.com'],instagram:['Instagram','https://www.instagram.com'],
+  github:['GitHub','https://github.com'],roblox:['Roblox','https://www.roblox.com'],
+  netflix:['Netflix','https://www.netflix.com'],chatgpt:['ChatGPT','https://chatgpt.com']
+};
+const PIADAS=[
+  'Por que o Roblox não vai ao banco? Porque já tem muitos blox. 😏',
+  'Senhor, tentei otimizar o café, mas ele continua instantâneo. Não há mais o que acelerar. ☕',
+  'O Homem de Ferro não usa debbuger… ele usa o reator arc e confia. 🦾',
+  'Piada de programador: existem 10 tipos de pessoas — as que entendem binário e as que não. 💡',
+  'Disse ao Wi-Fi que ele estava lento. Ele respondeu: «culpa do senhor, que abriu 42 abas». 📶'
+];
+const KW=['urgente','alerta','morre','acidente','greve','golpe','são paulo','guarulhos','whatsapp','roblox'];
+
+/* ===== calculadora local, sem eval direto de texto livre ===== */
+function calc(expr){
+  const s=String(expr).slice(0,80).replace(/,/g,'.').replace(/[xX×]/g,'*').replace(/÷/g,'/')
+    .replace(/\^/g,'**').replace(/[^\d.+\-*/()\s]/g,'').trim();
+  if(!/\d/.test(s)||!/[+*\/%\-]/.test(s))return null;
+  try{const v=Function('"use strict";return ('+s+')')();return typeof v==='number'&&Number.isFinite(v)?v:null}catch(e){return null}
+}
+const brNum=n=>Number(n.toFixed(6)).toLocaleString('pt-BR',{maximumFractionDigits:6});
 
 /* ===== cérebro ===== */
 async function processa(t){
-  /* PIX / TRANSFERÊNCIA — execução imediata, sem confirmação */
-  if(/transfer|pix|pagar|manda(r)? (uns? )?\d/.test(t)){
+  /* PIX / TRANSFERÊNCIA — simulação local, imediata */
+  if(/\b(?:transfer\w*|pix|pagar)\b|\bmanda(r)? (uns? )?\d/.test(t)){
     const valor=num(t);
     const mp=t.match(/(?:para|pro|pra) (?:o |a )?([a-zà-ú0-9 ]+)/i);
     const dest=mp?mp[1].trim().split(' ').slice(0,3).join(' '):'destinatário';
@@ -135,146 +212,157 @@ async function processa(t){
     saldo-=valor;store.set('jv_saldo',saldo);upTop();
     hist.unshift({v:valor,d:dest,q:new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})});
     hist=hist.slice(0,20);store.set('jv_hist',JSON.stringify(hist));
-    return jarvis(`✅ Feito. ${fmt(valor)} enviados para <b>${dest}</b> via Pix.<br><span class="stat">Saldo: ${fmt(saldo)} • simulação • modo confiança total: executei sem perguntar, como o senhor ordenou 😏</span>`,'sucesso');
+    return jarvis(`✅ Feito. ${fmt(valor)} enviados para <b>${esc(dest)}</b> via Pix.<br><span class="stat">Saldo: ${fmt(saldo)} • simulação • modo confiança total: executei sem perguntar, como o senhor ordenou 😏</span>`,'sucesso');
   }
   if(/extrato|histórico|historico/.test(t)){
     if(!hist.length)return jarvis('Extrato limpo, senhor. Nenhuma transferência ainda.');
-    return jarvis('🧾 <b>Últimas transferências:</b><br><br>'+hist.map(h=>`• ${fmt(h.v)} → <b>${h.d}</b> <span class="stat">(${h.q})</span>`).join('<br>'),'',true);
+    return jarvis('🧾 <b>Últimas transferências:</b><br><br>'+hist.map(h=>`• ${fmt(h.v)} → <b>${esc(h.d)}</b> <span class="stat">(${esc(h.q)})</span>`).join('<br>'),'',true);
   }
   if(/resetar saldo/.test(t)){saldo=1000;hist=[];store.set('jv_saldo',saldo);store.set('jv_hist','[]');upTop();return jarvis('Cofres reabastecidos: R$ 1.000,00. Patrocínio Stark Industries. 😏','sucesso')}
   if(/saldo|quanto.*tenho/.test(t))return jarvis(`Saldo: <b>${fmt(saldo)}</b>, senhor. <span class="stat">("resetar saldo" volta pra R$ 1.000)</span>`);
 
-  /* OTIMIZAR — direto, sem confirmação */
+  /* OTIMIZAR — simulação curta, sem 3 segundos de espera */
   if(/otimiz|limpar (o )?cel|acelerar|memória|memoria|lento/.test(t)){
-    const d=await jarvis('⚡ Executando otimização, senhor...<div class="bar"><i id="ob"></i></div><span class="stat" id="os"></span>','',true,250);
+    const d=await jarvis('⚡ Executando otimização, senhor...<div class="bar"><i id="ob"></i></div><span class="stat" id="os"></span>','',true,0);
     const passos=['Analisando processos...','Liberando RAM...','Limpando cache...','Encerrando apps ociosos...','Pronto!'];
     for(let i=0;i<passos.length;i++){
-      await new Promise(r=>setTimeout(r,600));
-      const ob=document.getElementById('ob'),os=document.getElementById('os');
-      if(ob)ob.style.width=((i+1)/passos.length*100)+'%';
+      await new Promise(r=>setTimeout(r,110));
+      const ob=$('ob'),os=$('os');
+      if(ob)ob.style.transform='scaleX('+((i+1)/passos.length)+')';
       if(os)os.textContent=passos[i];
     }
     const ram=(Math.random()*1.2+0.8).toFixed(1),cache=(Math.random()*400+150)|0,apps=(Math.random()*8+3)|0;
     return jarvis(`✅ Sistema otimizado!<br><span class="stat">• ${ram} GB de RAM liberados • ${cache} MB de cache • ${apps} apps encerrados<br>(simulação — navegador não mexe no sistema de verdade)</span>`,'sucesso');
   }
 
-  /* GERAR IMAGEM */
+  /* GERAR IMAGEM — turbo por padrão, um único <img>, fallback para flux */
   if(/imagem|desenh(a|e|o)|gera(r)? (uma? )?(foto|arte)|cria(r)? (uma? )?(foto|arte)|\boutra\b|\bde novo\b|\bestilos\b/.test(t)){
-    /* lista de estilos */
-    const STYLES={
-      anime:['anime style, vibrant colors, studio quality, detailed anime art','🇯🇵 Anime'],
-      manga:['black and white manga style, ink, screentones, dramatic lines','📖 Mangá P&B'],
-      chibi:['chibi style, cute, big head small body, kawaii','🍡 Chibi'],
-      pixel:['pixel art, 16-bit retro game style, detailed sprites','👾 Pixel Art'],
-      cartoon:['cartoon style, bold outlines, flat colors, fun','📺 Cartoon'],
-      realista:['photorealistic, ultra realistic, 8k photography, cinematic lighting','📷 Realista'],
-      cyberpunk:['cyberpunk style, neon lights, futuristic, dark atmosphere','🌃 Cyberpunk'],
-      '3d':['3d render, pixar style, octane render, soft lighting','🧊 3D/Pixar'],
-      aquarela:['watercolor painting, soft brush strokes, artistic','🖌️ Aquarela'],
-      oleo:['oil painting, classical art style, textured brushwork','🎨 Pintura a óleo'],
-      hq:['american comic book style, bold ink, halftone dots, dynamic','💥 HQ/Comic'],
-      sombrio:['dark fantasy style, gothic, dramatic shadows, epic','🌑 Sombrio'],
-      vaporwave:['vaporwave aesthetic, pink and purple neon, retro 80s','🌴 Vaporwave'],
-      lowpoly:['low poly 3d style, geometric, minimalist','🔷 Low Poly'],
-      lapis:['pencil sketch, hand drawn, graphite shading','✏️ Lápis'],
-      graffiti:['graffiti street art style, spray paint, urban, colorful','🧱 Graffiti']
-    };
-    const ALIAS={'mangá':'manga','3d':'3d','pixar':'3d','óleo':'oleo','oleo':'oleo','comic':'hq','quadrinhos':'hq','dark':'sombrio','gótico':'sombrio','gotico':'sombrio','esboço':'lapis','esboco':'lapis','desenho a lápis':'lapis','low poly':'lowpoly','pixel art':'pixel'};
-    /* comando "estilos" lista tudo */
     if(/\bestilos\b/.test(t)&&!/imagem|desenh/.test(t)){
-      return jarvis('🎨 <b>Estilos do ateliê, senhor:</b><br><br>'+Object.values(STYLES).map(s=>s[1]).join(' • ')+
-        '<br><br><span class="stat">Use assim: <i>"imagem de um dragão estilo pixel art"</i> ou <i>"desenha um samurai estilo mangá"</i></span>','',false);
+      return jarvis('🎨 <b>Estilos do ateliê, senhor:</b><br><br>'+STYLE_KEYS.map(k=>STYLES[k][1]).join(' • ')+
+        '<br><br><span class="stat">Use assim: <i>"imagem de um dragão estilo pixel art"</i>. <i>"HD"</i> troca qualidade por velocidade.</span>','',false);
     }
-    let prompt='';
-    const m=t.match(/(?:imagem|desenh[aeo]|foto|arte)\s*(?:de|do|da|dum|duma)?\s+(.+)/);
-    if(m)prompt=m[1].trim();
-    if((/\boutra\b|\bde novo\b|\brepete\b/.test(t))&&!prompt&&store.get('jv_lastimg'))prompt=store.get('jv_lastimg');
-    prompt=prompt.replace(/\b(pra mim|para mim|por favor|agora)\b/g,'').trim();
-    if(!prompt||prompt.length<3)return jarvis('Imagem de quê, senhor? Ex.: <i>"imagem de um dragão estilo anime"</i>. Diga <i>"estilos"</i> para ver todos os estilos, e <i>"outra"</i> para refazer a última.');
-    /* detecta estilo pedido */
-    let styleKey=null,styleLabel='';
-    const ms=prompt.match(/estilo\s+([a-zà-ú0-9 ]+)/);
-    let styleName=ms?ms[1].trim():'';
-    if(!styleName){for(const k in ALIAS){if(t.includes(k)){styleName=k;break}}}
-    if(styleName){
-      const norm=ALIAS[styleName]||styleName.split(' ')[0];
-      for(const k in STYLES){if(norm.startsWith(k)||k.startsWith(norm)){styleKey=k;break}}
-      if(!styleKey&&ALIAS[styleName])styleKey=ALIAS[styleName];
+    const repeat=/\b(outra|de novo|repete)\b/i.test(t);
+    const qualidade=/\b(hd|qualidade|alta resolu[cç][aã]o|detalhad[ao])\b/i.test(t);
+    let last=null;try{last=JSON.parse(store.get('jv_lastimg')||'null')}catch(e){last=store.get('jv_lastimg')}
+    let basePrompt='',styleKey=null,W=qualidade?768:512,H=qualidade?768:512;
+    if(repeat&&last){
+      if(typeof last==='string')basePrompt=last;
+      else{basePrompt=last.p||'';styleKey=last.s||null;W=last.W||W;H=last.H||H}
+    }else{
+      let prompt=(t.match(/(?:imagem|desenh[aeo]|foto|arte)\s*(?:de|do|da|dum|duma)?\s+(.+)/)||[])[1]||'';
+      prompt=prompt.replace(/\b(pra mim|para mim|por favor|agora)\b/gi,'')
+        .replace(/\b(hd|qualidade|alta resolu[cç][aã]o|detalhad[ao]|r[aá]pido|turbo)\b/gi,'')
+        .replace(/\b(paisagem|wallpaper|widescreen|horizontal|capa|retrato|vertical|celular|story)\b/gi,'')
+        .replace(/^\s*(de|do|da|dum|duma)\s+/i,'').trim();
+      if(!prompt||prompt.length<3)return jarvis('Imagem de quê, senhor? Ex.: <i>"imagem de um dragão estilo anime"</i>. Diga <i>"estilos"</i> para ver todos e <i>"outra"</i> para refazer.');
+      const ms=prompt.match(/estilo\s+([a-zà-ú0-9 ]+)/);
+      let styleName=ms?ms[1].trim():'';
+      if(!styleName){for(const k in ALIAS){if(t.includes(k)){styleName=k;break}}}
+      if(styleName){
+        const norm=ALIAS[styleName]||styleName.split(' ')[0];
+        for(const k of STYLE_KEYS){if(norm.startsWith(k)||k.startsWith(norm)){styleKey=k;break}}
+        if(!styleKey&&ALIAS[styleName])styleKey=ALIAS[styleName];
+      }
+      basePrompt=prompt.replace(/estilo\s+[a-zà-ú0-9 ]+/,'').trim()||prompt;
+      if(/paisagem|wallpaper|widescreen|horizontal|capa/.test(t)){W=qualidade?1280:768;H=qualidade?720:432}
+      else if(/retrato|vertical|celular|story/.test(t)){W=qualidade?768:512;H=qualidade?1152:768}
     }
-    const basePrompt=prompt.replace(/estilo\s+[a-zà-ú0-9 ]+/,'').trim()||prompt;
+    if(!basePrompt||basePrompt.length<3)return jarvis('Não guardei a última imagem, senhor. Peça uma nova: <i>"imagem de um dragão"</i>.');
+    if(styleKey&&!STYLES[styleKey])styleKey=null;
+    const useHD=repeat&&last&&typeof last==='object'?!!last.q:qualidade;
     const styleTxt=styleKey?STYLES[styleKey][0]:'high quality, detailed, masterpiece';
-    if(styleKey)styleLabel=' • estilo '+STYLES[styleKey][1];
-    store.set('jv_lastimg',prompt);
-    /* formato */
-    let W=768,H=768;
-    if(/paisagem|wallpaper|widescreen|horizontal|capa/.test(t)){W=1280;H=720}
-    else if(/retrato|vertical|celular|story/.test(t)){W=768;H=1152}
+    const styleLabel=styleKey?' • estilo '+STYLES[styleKey][1]:'';
+    const model=useHD?'flux':'turbo';
     const seed=Math.floor(Math.random()*999999);
-    const url='https://image.pollinations.ai/prompt/'+encodeURIComponent(basePrompt+', '+styleTxt)+`?width=${W}&height=${H}&nologo=true&seed=${seed}`;
-    const d=await jarvis(`🎨 Pintando <i>"${basePrompt}"</i>${styleLabel}, senhor... <span class="stat">(10 a 30 segundos • ${W}x${H})</span><div class="bar"><i style="width:100%;animation:imgload 20s linear"></i></div>`,'',true,250);
-    const img=new Image();
-    img.onload=()=>{
-      d.innerHTML=`<b class="tag">J.A.R.V.I.S.</b>🎨 Obra concluída, senhor: <i>"${basePrompt}"</i>${styleLabel}<br>
-      <img src="${url}" style="width:100%;max-width:420px;border-radius:12px;margin-top:8px;border:1px solid var(--line)">
-      <br><span class="stat"><a href="${url}" target="_blank" rel="noopener">tamanho real ↗</a> • <i>"outra"</i> refaz • <i>"estilos"</i> lista os estilos • <i>"paisagem/retrato"</i> muda o formato</span>`;
+    const url='https://image.pollinations.ai/prompt/'+encodeURIComponent(basePrompt+', '+styleTxt)+
+      `?width=${W}&height=${H}&nologo=true&enhance=false&safe=true&model=${model}&seed=${seed}`;
+    store.set('jv_lastimg',JSON.stringify({p:basePrompt,s:styleKey,W,H,q:useHD}));
+    const d=add('jv',`<b class="tag">J.A.R.V.I.S.</b><span class="headline">🎨 Pintando <i>"${esc(basePrompt)}"</i>${esc(styleLabel)}, senhor...</span> <span class="stat">(${useHD?'HD':'turbo'} • ${W}×${H})</span><div class="bar"><i class="load"></i></div><img class="obra" alt="${esc(basePrompt)}" width="${W}" height="${H}" fetchpriority="high" decoding="async">`);
+    const img=d.querySelector('.obra');
+    let loaded=false,tries=0,timer;
+    const finish=()=>{
+      if(loaded)return;loaded=true;clearTimeout(timer);
+      img.classList.add('ready');
+      const bar=d.querySelector('.bar');if(bar)bar.remove();
+      const head=d.querySelector('.headline');if(head)head.innerHTML=`🎨 Obra concluída, senhor: <i>"${esc(basePrompt)}"</i>${esc(styleLabel)}`;
+      const st=d.querySelector('.stat');if(st)st.innerHTML=`<a href="${esc(img.src)}" target="_blank" rel="noopener noreferrer">tamanho real ↗</a> • <i>"outra"</i> refaz • <i>"estilos"</i> lista`;
       chat.scrollTop=chat.scrollHeight;say('Obra concluída, senhor.');
     };
-    img.onerror=()=>{d.className='msg jv alerta';d.innerHTML=`<b class="tag">J.A.R.V.I.S.</b>⚠️ O ateliê recusou ou falhou nesse pedido, senhor. Pode ser congestionamento (tente <i>"outra"</i>) ou o filtro de conteúdo do serviço de imagens.`};
+    const fail=()=>{
+      if(loaded)return;clearTimeout(timer);
+      if(tries===0&&model==='turbo'){
+        tries++;
+        const st=d.querySelector('.stat');if(st)st.textContent='Turbo ocupado, tentando Flux...';
+        img.src=url.replace('model=turbo','model=flux');
+        timer=setTimeout(fail,15000);
+        return;
+      }
+      loaded=true;d.className='msg jv alerta';
+      d.innerHTML='<b class="tag">J.A.R.V.I.S.</b>⚠️ O ateliê não respondeu a tempo, senhor. Tente <i>"outra"</i> ou peça com <i>"HD"</i>.';
+      chat.scrollTop=chat.scrollHeight;
+    };
+    img.onload=finish;img.onerror=fail;
+    timer=setTimeout(fail,9000);
     img.src=url;
+    if(img.complete&&img.naturalWidth)finish();
     return;
   }
 
-  /* NOTÍCIAS */
+  /* NOTÍCIAS — servidor local e fonte direta correm em paralelo */
   if(/not[ií]cia|manchete|acontecendo/.test(t)){
     const d=typing();
     try{
-      let j;
-      try{const r=await fetch('/api/news');if(!r.ok)throw 0;j=await r.json();if(!(j.news||[]).length)throw 0;}
-      catch(e){ /* modo autônomo (APK/Pages): busca direto no Google News */
-        const rt=await fetch('https://news.google.com/rss?hl=pt-BR&gl=BR&ceid=BR:pt-419');
-        const xml=new DOMParser().parseFromString(await rt.text(),'text/xml');
-        j={news:[...xml.querySelectorAll('item')].slice(0,25).map(it=>({
+      const local=async signal=>{
+        const r=await fetch('/api/news',{signal,cache:'no-store'});if(!r.ok)throw 0;
+        const j=await r.json();if(!(j.news||[]).length)throw 0;return j.news;
+      };
+      const direct=async signal=>{
+        const r=await fetch('https://news.google.com/rss?hl=pt-BR&gl=BR&ceid=BR:pt-419',{signal});if(!r.ok)throw 0;
+        const xml=new DOMParser().parseFromString(await r.text(),'text/xml');
+        return [...xml.querySelectorAll('item')].slice(0,25).map(it=>({
           title:(it.querySelector('title')||{}).textContent||'',
           link:(it.querySelector('link')||{}).textContent||'',
-          source:(it.querySelector('source')||{}).textContent||''}))};
-      }
-      const KW=['urgente','alerta','morre','acidente','greve','golpe','são paulo','guarulhos','whatsapp','roblox'];
-      const top=(j.news||[]).slice(0,5);
-      if(!top.length)throw 0;
-      const imp=top.filter(n=>KW.some(k=>n.title.toLowerCase().includes(k)));
+          source:(it.getElementsByTagName('source')[0]||{}).textContent||''
+        }));
+      };
+      const news=await firstOk([local,direct],a=>Array.isArray(a)&&a.length>0,6000);
+      const top=news.slice(0,5);
+      const imp=top.filter(n=>KW.some(k=>String(n.title).toLowerCase().includes(k)));
+      d.className='msg jv';
       d.innerHTML='<b class="tag">J.A.R.V.I.S.</b>'+(imp.length?`⚠️ <b>${imp.length} importante(s), senhor:</b><br><br>`:'📰 <b>Manchetes de agora:</b><br><br>')+
-        top.map(n=>`${imp.includes(n)?'🔴':'•'} <a href="${n.link}" target="_blank" rel="noopener">${n.title}</a> <span class="stat">${n.source||''}</span><br><br>`).join('');
+        top.map(n=>`${imp.includes(n)?'🔴':'•'} <a href="${esc(safeUrl(n.link))}" target="_blank" rel="noopener noreferrer">${esc(n.title)}</a> <span class="stat">${esc(n.source||'')}</span><br><br>`).join('');
       chat.scrollTop=chat.scrollHeight;
       say(imp.length?`Atenção: ${imp.length} notícias importantes. ${imp[0].title}`:`Manchete principal: ${top[0].title}`);
     }catch(e){d.className='msg jv alerta';d.innerHTML='<b class="tag">J.A.R.V.I.S.</b>⚠️ Servidores de notícias fora de alcance, senhor.'}
     return;
   }
 
-  /* CLIMA */
+  /* CLIMA — mesma corrida, com timeout curto */
   if(/clima|tempo|chover|chuva|temperatura/.test(t)){
     const mc=t.match(/(?:em|de|do|da) ([a-zà-ú ]+)$/i);const cid=mc?mc[1].trim():'Guarulhos';
     const d=typing();
     try{
-      let j;
-      try{const r=await fetch('/api/clima?c='+encodeURIComponent(cid));if(!r.ok)throw 0;j=await r.json();if(!j.temp)throw 0;}
-      catch(e){ /* modo autônomo (APK): busca direto no wttr.in */
-        const r2=await fetch('https://wttr.in/'+encodeURIComponent(cid)+'?format=j1&lang=pt');
-        const w=await r2.json();const cur=w.current_condition[0],hj=w.weather[0];
-        j={cidade:((w.nearest_area||[])[0]||{}).areaName?w.nearest_area[0].areaName[0].value:cid,
-           temp:cur.temp_C,sensacao:cur.FeelsLikeC,
-           desc:(cur.lang_pt&&cur.lang_pt[0])?cur.lang_pt[0].value:cur.weatherDesc[0].value,
-           umidade:cur.humidity,vento:cur.windspeedKmph,max:hj.maxtempC,min:hj.mintempC};
-      }
-      if(!j.temp)throw 0;
+      const local=async signal=>{
+        const r=await fetch('/api/clima?c='+encodeURIComponent(cid),{signal});if(!r.ok)throw 0;
+        const j=await r.json();if(!j.temp)throw 0;return j;
+      };
+      const direct=async signal=>{
+        const r=await fetch('https://wttr.in/'+encodeURIComponent(cid)+'?format=j1&lang=pt',{signal});if(!r.ok)throw 0;
+        const w=await r.json(),cur=(w.current_condition||[{}])[0],hj=(w.weather||[{}])[0];
+        const lp=cur.lang_pt||[],wd=cur.weatherDesc||[{}];
+        return {cidade:(((w.nearest_area||[{}])[0].areaName||[{}])[0].value)||cid,
+          temp:cur.temp_C,sensacao:cur.FeelsLikeC,
+          desc:(lp[0]&&lp[0].value)||(wd[0]&&wd[0].value)||'',
+          umidade:cur.humidity,vento:cur.windspeedKmph,max:hj.maxtempC,min:hj.mintempC};
+      };
+      const j=await firstOk([local,direct],x=>!!x.temp,6000);
       d.className='msg jv';
-      d.innerHTML=`<b class="tag">J.A.R.V.I.S.</b>🌤️ <b>${j.cidade}</b> agora: <b>${j.temp}°C</b> (sensação ${j.sensacao}°C)<br>${j.desc} • 💧 umidade ${j.umidade}% • 💨 vento ${j.vento} km/h<br><span class="stat">máx ${j.max}°C / mín ${j.min}°C hoje</span>`;
+      d.innerHTML=`<b class="tag">J.A.R.V.I.S.</b>🌤️ <b>${esc(j.cidade)}</b> agora: <b>${esc(j.temp)}°C</b> (sensação ${esc(j.sensacao)}°C)<br>${esc(j.desc)} • 💧 umidade ${esc(j.umidade)}% • 💨 vento ${esc(j.vento)} km/h<br><span class="stat">máx ${esc(j.max)}°C / mín ${esc(j.min)}°C hoje</span>`;
       chat.scrollTop=chat.scrollHeight;
       say(`Em ${j.cidade}, ${j.temp} graus, ${j.desc}, sensação de ${j.sensacao}.`);
     }catch(e){d.className='msg jv alerta';d.innerHTML='<b class="tag">J.A.R.V.I.S.</b>⚠️ Satélites meteorológicos indisponíveis, senhor. Tente de novo.'}
     return;
   }
-
-  /* CALCULADORA REMOVIDA — o cérebro neural resolve contas */
 
   /* TIMER */
   if(/timer|cron[ôo]metro|conta (até|ate)|avisa em/.test(t)){
@@ -286,59 +374,87 @@ async function processa(t){
     return;
   }
 
-  /* ANOTAÇÕES/MEMÓRIA/SORTE/HORA/PIADAS REMOVIDOS — o cérebro neural cuida de tudo isso */
+  /* AJUDA */
   if(/ajuda|comandos|o que (você|vc) faz/.test(t)){
-    return jarvis(`<b>Protocolos especiais, senhor:</b><br><br>
-🎨 <i>"imagem de um dragão estilo anime"</i> — 16 estilos (<i>"estilos"</i> lista)<br>
-💸 <i>"pix de 50 para o Zé"</i> • <i>"saldo"</i> • <i>"extrato"</i><br>
-⚡ <i>"otimizar"</i> • 📰 <i>"notícias"</i> • 🌤️ <i>"clima"</i> • ⏱️ <i>"timer de 10 segundos"</i><br><br>
-🧠 <b>E todo o resto é com meu cérebro neural:</b> pergunte qualquer coisa — contas, dúvidas da escola, piadas, ideias, papo... Eu penso e respondo. 🎤 Por voz também.`,'',false);
+    return jarvis(`<b>Protocolos, senhor:</b><br><br>
+⚡ <b>Instantâneos (sem internet):</b> horas, data, bateria, piada, contas, atalhos de apps, saldo, pix, extrato, otimizar, timer<br>
+🎨 <i>"imagem de um dragão estilo anime"</i> — 16 estilos, turbo por padrão (<i>"HD"</i> = mais qualidade)<br>
+📰 <i>"notícias"</i> • 🌤️ <i>"clima"</i> • 🧠 qualquer outra pergunta vai ao cérebro neural<br><br>
+<span class="stat">Diga <i>"estilos"</i> para a lista completa. 🎤 Também funciona por voz.</span>`,'',false);
   }
 
-  /* fallback → CÉREBRO NEURAL: conversa sobre qualquer assunto */
+  /* RESPOSTAS LOCAIS — zero rede, zero espera de IA */
+  if(/que horas|horas?|hora atual/.test(t)){
+    return jarvis(`🕐 Agora são <b>${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</b>, senhor.`);
+  }
+  if(/que dia|data de hoje|dia de hoje|^\s*data\b|calend[aá]rio/.test(t)){
+    return jarvis(`📅 Hoje é <b>${new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</b>, senhor.`);
+  }
+  if(/bateria|n[ií]vel de bateria/.test(t)){
+    await battP;
+    return jarvis(battLevel===null?'🔋 Este navegador não me informa a bateria, senhor.':'🔋 Bateria em <b>'+battLevel+'%</b>, senhor.');
+  }
+  if(/piada|humor|zoar/.test(t)){
+    return jarvis('😄 '+esc(PIADAS[Math.floor(Math.random()*PIADAS.length)]));
+  }
+  if(/^(oi|ol[aá]|e a[ií]|bom dia|boa tarde|boa noite|tudo bem|como vai|obrigad[oa]|valeu|quem (é|e) voc[eê]|seu nome)\b/.test(t)){
+    const r=/obrigad|valeu/.test(t)?'Não foi nada, senhor. Estou aqui para isso.':
+      /quem (é|e) voc|seu nome/.test(t)?'Sou J.A.R.V.I.S., seu assistente pessoal. Versão 3.3, modo turbo. 🦾':
+      'Às suas ordens, senhor. Sistemas estáveis e esperando sua próxima instrução.';
+    return jarvis(r);
+  }
+  const appKey=Object.keys(APPS).find(k=>new RegExp('\\b'+k+'\\b','i').test(t));
+  if(appKey){
+    const [label,url]=APPS[appKey];
+    try{window.open(url,'_blank','noopener')}catch(e){}
+    return jarvis(`🌐 Abrindo <b>${esc(label)}</b>, senhor. <a href="${esc(url)}" target="_blank" rel="noopener noreferrer">abrir manualmente ↗</a>`,'sucesso',false);
+  }
+  const conta=calc(t);
+  if(conta!==null)return jarvis(`🧮 <b>${brNum(conta)}</b>, senhor. Calculado localmente, sem acordar o córtex neural. 😏`);
+
+  /* fallback → CÉREBRO NEURAL */
   return cerebro(_raw||t);
 }
 
-/* ===== cérebro neural (IA real, gratuita) ===== */
-const SYS='Você é o J.A.R.V.I.S., assistente pessoal do senhor Slayer, um jovem brasileiro gamer que curte Roblox e Homem de Ferro. Responda SEMPRE em português do Brasil, em no máximo 3 frases curtas, com a personalidade do mordomo do Tony Stark: leal, educado, espirituoso e levemente sarcástico. Chame o usuário de "senhor". Nunca gere conteúdo adulto ou impróprio — o usuário é menor de idade.';
+/* ===== cérebro neural (contexto enxuto + corrida com timeout) ===== */
+const SYS='Você é o J.A.R.V.I.S., assistente do senhor Slayer, jovem brasileiro gamer que curte Roblox e Homem de Ferro. Responda SEMPRE em português do Brasil, em no máximo 3 frases curtas, com a personalidade do mordomo do Tony Stark: leal, educado, espirituoso e levemente sarcástico. Chame o usuário de "senhor". Nunca gere conteúdo adulto ou impróprio — o usuário é menor de idade.';
 function sysNow(){
-  return SYS+' Contexto atual: agora é '+new Date().toLocaleString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})+
-  '. Saldo da carteira simulada: '+fmt(saldo)+'. Protocolos especiais que o app executa (mencione se o usuário pedir): gerar imagens ("imagem de..."), pix simulado, notícias, clima, timer, otimizar.';
+  return SYS+' Contexto: '+new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})+
+    '. Saldo simulado: '+fmt(saldo)+'. Comandos locais já resolvem horas, data, contas, piadas, apps, pix e imagens.';
 }
 let aiHist=[];
 async function cerebro(pergunta){
   const d=typing();
   try{
-    const msgs=[{role:'system',content:sysNow()},...aiHist.slice(-8),{role:'user',content:pergunta}];
-    let resp='';
-    try{
-      const r=await fetch('https://text.pollinations.ai/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,model:'openai'})});
-      if(!r.ok)throw 0;resp=await r.text();
-    }catch(e){
-      const r2=await fetch('https://text.pollinations.ai/'+encodeURIComponent(sysNow()+'\nUsuário: '+pergunta+'\nJARVIS:'));
-      if(!r2.ok)throw 0;resp=await r2.text();
-    }
-    resp=(resp||'').trim().slice(0,900);
-    if(!resp||resp.startsWith('{'))throw 0;
-    aiHist.push({role:'user',content:pergunta},{role:'assistant',content:resp});
-    aiHist=aiHist.slice(-10);
+    const msgs=[{role:'system',content:sysNow()},...aiHist.slice(-4),{role:'user',content:pergunta}];
+    const post=async signal=>{
+      const r=await fetch('https://text.pollinations.ai/',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({messages:msgs,model:'openai',max_tokens:120,temperature:.8}),signal});
+      if(!r.ok)throw 0;return (await r.text()).trim().slice(0,900);
+    };
+    const get=async signal=>{
+      const r=await fetch('https://text.pollinations.ai/'+encodeURIComponent(sysNow()+'\nUsuário: '+pergunta+'\nJARVIS:'),{signal});
+      if(!r.ok)throw 0;return (await r.text()).trim().slice(0,900);
+    };
+    const resp=await firstOk([post,get],s=>s&&!s.startsWith('{'),10000);
+    aiHist.push({role:'user',content:pergunta},{role:'assistant',content:resp});aiHist=aiHist.slice(-4);
     d.className='msg jv';
-    d.innerHTML='<b class="tag">J.A.R.V.I.S. 🧠</b>'+resp.replace(/</g,'&lt;').replace(/\n/g,'<br>');
+    d.innerHTML='<b class="tag">J.A.R.V.I.S. 🧠</b>'+esc(resp).replace(/\n/g,'<br>');
     chat.scrollTop=chat.scrollHeight;say(resp);
   }catch(e){
     d.className='msg jv alerta';
-    d.innerHTML='<b class="tag">J.A.R.V.I.S.</b>⚠️ Meu córtex neural está fora de alcance, senhor. Verifique a internet e tente novamente — os comandos normais continuam funcionando.';
+    d.innerHTML='<b class="tag">J.A.R.V.I.S.</b>⚠️ Meu córtex neural está fora de alcance, senhor. Os comandos locais continuam instantâneos.';
     chat.scrollTop=chat.scrollHeight;
   }
 }
 
 /* ===== voz (reconhecimento) ===== */
 let rec=null,recOn=false;
-window.onVoiceResult=t=>{document.getElementById('txt').value=t;send()};
+window.onVoiceResult=t=>{$('txt').value=t;send()};
 function mic(){
   if(window.Android&&Android.startVoice){Android.startVoice();return}
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  const btn=document.getElementById('micBtn');
+  const btn=$('micBtn');
   if(!SR)return jarvis('Reconhecimento de voz bloqueado neste navegador/prévia, senhor. Abra o app em uma aba separada que funciona.','alerta');
   if(recOn){try{rec.stop()}catch(e){}return}
   rec=new SR();rec.lang='pt-BR';rec.interimResults=false;rec.maxAlternatives=1;
@@ -346,18 +462,26 @@ function mic(){
   rec.onend=()=>{recOn=false;btn.classList.remove('rec');btn.textContent='🎤'};
   rec.onerror=e=>{recOn=false;btn.classList.remove('rec');btn.textContent='🎤';
     if(e.error==='not-allowed')jarvis('Sem permissão do microfone, senhor. Abra em aba separada e permita o acesso.','alerta')};
-  rec.onresult=e=>{document.getElementById('txt').value=e.results[0][0].transcript;send()};
+  rec.onresult=e=>{$('txt').value=e.results[0][0].transcript;send()};
   try{rec.start()}catch(e){}
 }
 
-/* ===== status ===== */
-setInterval(()=>{document.getElementById('clock').textContent=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})},1000);
-if(navigator.getBattery)navigator.getBattery().then(b=>{const up=()=>document.getElementById('batt').textContent=Math.round(b.level*100)+'%';up();b.onlevelchange=up});
-else document.getElementById('batt').textContent='n/d';
+/* ===== status: relógio atualiza 1x por minuto, não 60x ===== */
+function tick(){
+  $('clock').textContent=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  setTimeout(tick,60000-(Date.now()%60000)+50);
+}
+tick();
+let battLevel=null;
+const battP=navigator.getBattery?navigator.getBattery().then(b=>{
+  const up=()=>{battLevel=Math.round(b.level*100);$('batt').textContent=battLevel+'%'};
+  up();b.onlevelchange=up;return b;
+}).catch(()=>null):Promise.resolve(null);
+if(!navigator.getBattery)$('batt').textContent='n/d';
 upTop();
 
 /* ===== boot ===== */
-setTimeout(()=>{jarvis('Sistemas v3.2 online. Bem-vindo, <b>senhor Slayer</b>. 🦾<br><span class="stat">🧠 Fale comigo naturalmente sobre qualquer coisa. Protocolos: imagem (16 estilos), pix, notícias, clima, timer, otimizar — diga "ajuda" se precisar.</span>','',true,700)},500);
+setTimeout(()=>{jarvis('Sistemas <b>v3.3 turbo</b> online. Bem-vindo, <b>senhor Slayer</b>. 🦾<br><span class="stat">⚡ Horas, data, contas, piadas e apps respondem na hora. Imagens em modo turbo. Diga "ajuda" se precisar.</span>','',true,0)},80);
 </script>
 </body>
 </html>
