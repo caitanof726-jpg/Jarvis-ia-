@@ -59,7 +59,7 @@ def cached(key, ttl, loader):
             data = loader()
             CACHE[key] = {"t": time.time(), "err": 0, "data": data}
             return data
-        except Exception:
+        except Exception:  # pylint: disable=broad-exception-caught
             stale = item.get("data") if item else None
             CACHE[key] = {
                 "t": item.get("t", 0) if item else 0,
@@ -72,6 +72,7 @@ def cached(key, ttl, loader):
 
 
 def load_news():
+    """Busca e normaliza até 25 manchetes do Google News Brasil."""
     req = urllib.request.Request(FEED, headers={
         "User-Agent": "Mozilla/5.0",
         "Accept": "application/rss+xml, application/xml;q=0.9, */*;q=0.8",
@@ -97,6 +98,7 @@ def load_news():
 
 
 def load_clima(cidade):
+    """Busca o clima atual de uma cidade no wttr.in."""
     url = "https://wttr.in/" + urllib.parse.quote(cidade) + "?format=j1&lang=pt"
     req = urllib.request.Request(url, headers={
         "User-Agent": "curl/8.0",
@@ -129,29 +131,36 @@ def load_clima(cidade):
 
 
 def news():
+    """Retorna notícias com cache de 5 minutos."""
     return cached(("news",), NEWS_TTL, load_news)
 
 
 def clima(cidade):
+    """Retorna clima com cache de 3 minutos por cidade."""
     return cached(("clima", cidade.strip().lower()), CLIMA_TTL,
                   lambda: load_clima(cidade))
 
 
 class H(SimpleHTTPRequestHandler):
+    """Handler HTTP: estáticos compactados + endpoints /api."""
+
     protocol_version = "HTTP/1.1"
 
     def end_headers(self):
+        """Adiciona cabeçalho de segurança antes de fechar os headers."""
         self.send_header("X-Content-Type-Options", "nosniff")
         super().end_headers()
 
     def send_json(self, obj, status=200, max_age=60):
+        """Envia JSON, com gzip quando o corpo compensa."""
         raw = json.dumps(obj, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
         gz = "gzip" in self.headers.get("Accept-Encoding", "").lower() and len(raw) > 512
         body = gzip.compress(raw, compresslevel=6) if gz else raw
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
-        self.send_header("Cache-Control", "public, max-age=" + str(max_age) if status == 200 else "no-store")
+        cc = "public, max-age=" + str(max_age) if status == 200 else "no-store"
+        self.send_header("Cache-Control", cc)
         self.send_header("Vary", "Accept-Encoding")
         if gz:
             self.send_header("Content-Encoding", "gzip")
@@ -201,6 +210,7 @@ class H(SimpleHTTPRequestHandler):
         return io.BytesIO(body)
 
     def do_GET(self):
+        """Roteia /api/health, /api/news e /api/clima; o resto é estático."""
         parsed = urllib.parse.urlparse(self.path)
         if parsed.path == "/api/health":
             self.send_json({"ok": True, "ts": int(time.time())}, max_age=0)
@@ -208,7 +218,7 @@ class H(SimpleHTTPRequestHandler):
         if parsed.path == "/api/news":
             try:
                 self.send_json(news())
-            except Exception as e:
+            except Exception as e:  # pylint: disable=broad-exception-caught
                 self.send_json({"error": str(e), "news": []}, status=502, max_age=0)
             return
         if parsed.path == "/api/clima":
@@ -216,16 +226,19 @@ class H(SimpleHTTPRequestHandler):
             cidade = (q.get("c", ["Guarulhos"])[0] or "Guarulhos").strip()[:60]
             try:
                 self.send_json(clima(cidade))
-            except Exception as e:
+            except Exception as e:  # pylint: disable=broad-exception-caught
                 self.send_json({"error": str(e)}, status=502, max_age=0)
             return
         super().do_GET()
 
-    def log_message(self, fmt, *args):
+    def log_message(self, fmt, *args):  # pylint: disable=arguments-differ
+        """Loga requisições com o prefixo [jarvis]."""
         print("[jarvis]", fmt % args)
 
 
 class Server(ThreadingHTTPServer):
+    """Servidor HTTP com threads daemon e porta reutilizável."""
+
     daemon_threads = True
     allow_reuse_address = True
 
